@@ -1,0 +1,5 @@
+
+User-agent:*
+Disallow:
+
+Sitemap: https://gitee.com/paramhh/blog/blog/sitemap.xml
