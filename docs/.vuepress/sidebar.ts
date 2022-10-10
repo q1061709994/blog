@@ -60,7 +60,7 @@ export default sidebar({
       ],
     },
   ],
-  /*"/about-the-author/": [
+  "/about-the-author/": [
     {
       text: "个人经历",
       icon: "zuozhe",
@@ -82,5 +82,5 @@ export default sidebar({
         "zhishixingqiu-two-years",
       ],
     },
-  ],*/
+  ],
 });
