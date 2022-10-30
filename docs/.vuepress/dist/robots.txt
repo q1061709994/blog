@@ -2,4 +2,4 @@
 User-agent:*
 Disallow:
 
-Sitemap: https://gitee.com/paramhh/blog/blog/sitemap.xml
+Sitemap: https://github.com/q1061709994/blog/blog/sitemap.xml

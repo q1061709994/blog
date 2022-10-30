@@ -6,11 +6,11 @@ title: 主页
 heroImage: /logo.svg
 heroText: 相见欢
 heroFullScreen: true
-tagline: Huan.blog
+tagline: 醉后不知天在水，满船清梦压星河。
 projects: null
 footer: VuePress Theme Hope
 ---
-## 网站概览
+## 网站概览y
 
 * [算法笔记](posts/article1.md)：日常刷题笔记
 * [周赛总结](posts/article2.md)：leetcode周赛总结

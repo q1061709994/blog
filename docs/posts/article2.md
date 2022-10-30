@@ -2384,3 +2384,463 @@ class Solution {
 #### Problem D - [矩阵中和能被 K 整除的路径](https://leetcode.cn/problems/paths-in-matrix-whose-sum-is-divisible-by-k/)
 
 **解法：动态规划**
+
+## 89场双周赛
+
+#### Problem A - [有效时间的数目](https://leetcode.cn/problems/number-of-valid-clock-times/)
+
+**解法：枚举**
+
+~~~
+class Solution {
+        public int countTime(String time) {
+            String[] temp = time.split(":");
+            int ans1 = 1, ans2 = 1, ans3 = 1, ans4 = 1;
+            if (temp[0].equals("??")) {
+                ans1 = 3;
+                ans2 = 8;
+            } else if (temp[0].charAt(0) == '?' && temp[0].charAt(1) != '?') {
+                if (temp[0].charAt(1) >= '4' && temp[0].charAt(1) <= '9') ans1 = 2;
+                else ans1 = 3;
+            } else if (temp[0].charAt(1) == '?' && temp[0].charAt(0) != '?') {
+                if (temp[0].charAt(0) == '2') ans2 = 4;
+                else ans2 = 10;
+            }
+            if (temp[1].charAt(0) == '?') {
+                ans3 = 6;
+            }
+            if (temp[1].charAt(1) == '?') {
+                ans4 = 10;
+            }
+            return ans1 * ans2 * ans3 * ans4;
+        }
+    }
+~~~
+
+#### Problem B - [二的幂数组中查询范围内的乘积](https://leetcode.cn/problems/range-product-queries-of-powers/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    int mod = (int) 1e9 + 7;
+    public int[] productQueries(int n, int[][] q) {
+        var m = q.length;
+        var p = new ArrayList<Integer>();
+        for (var i = 0; i < 30; i ++ ) 
+            if ((n >> i & 1) != 0)
+                p.add(1 << i);
+        var res = new int[m];
+        for (var i = 0; i < m; i ++ ) {
+            int l = q[i][0], r = q[i][1];
+            var cur = 1l;
+            for (var j = l; j <= r; j ++ )
+                cur = (cur * p.get(j)) % mod;
+            res[i] = (int) cur;
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [最小化数组中的最大值](https://leetcode.cn/problems/minimize-maximum-of-array/)
+
+**解法：二分**
+
+~~~
+class Solution {
+    public int minimizeArrayValue(int[] nums) {
+        int n = nums.length;
+        int k = 0;
+        for (int x : nums) k = Math.max(k, x);
+        int l = 0, r = k;
+        while (l < r) {
+            int mid = l + r >> 1;
+            var A = new long[n];
+            for (int i = 0; i < n; i ++ )
+                A[i] = nums[i] * 1l;
+            for (int i = n - 1; i > 0; i -- )
+                if (A[i] > mid) {
+                    var p = A[i] - mid * 1l;
+                    A[i] = mid;
+                    A[i - 1] += p;
+                }
+            if (mid >= A[0]) r = mid;
+            else l = mid + 1;
+        }
+        return r;
+    }
+}
+~~~
+
+
+
+#### Problem D - [创建价值相同的连通块](https://leetcode.cn/problems/create-components-with-same-value/)
+
+**解法：枚举**
+
+
+
+## 315场周赛
+
+#### Problem A - [与对应负数同时存在的最大正整数](https://leetcode.cn/problems/largest-positive-integer-that-exists-with-its-negative/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int findMaxK(int[] nums) {
+        var set = new HashSet<>();
+        for (int x : nums) 
+            if (x < 0)
+                set.add(x);
+        var res = 0;
+        for (int x: nums)
+            if (x > 0 && set.contains(-x))
+                res = Math.max(res, x);
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem B - [反转之后不同整数的数目](https://leetcode.cn/problems/count-number-of-distinct-integers-after-reverse-operations/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int countDistinctIntegers(int[] nums) {
+        var set = new HashSet<Integer>();
+        for (int x : nums) {
+            set.add(x);
+            var y = 0;
+            for (int k = x; k != 0; k /= 10)
+                y = y * 10 + k % 10;
+            set.add(y);
+        }
+        return set.size();
+    }
+}
+~~~
+
+
+
+#### Problem C - [反转之后的数字和](https://leetcode.cn/problems/sum-of-number-and-its-reverse/)
+
+**枚举**
+
+~~~
+class Solution {
+    public boolean sumOfNumberAndReverse(int num) {
+        for (int x = 0; x <= num; x ++ ) {
+            int y = 0;
+            for (int j = x; j != 0; j /= 10)
+                y = y * 10 + j % 10;
+            if (x + y == num) return true;
+        }
+        return false;
+    }
+}
+~~~
+
+
+
+#### Problem D - [统计定界子数组的数目](https://leetcode.cn/problems/count-subarrays-with-fixed-bounds/)
+
+**解法：滑动窗口**
+
+~~~
+class Solution {
+    public long countSubarrays(int[] nums, int minK, int maxK) {
+        var res = 0l;
+        int n = nums.length, x = -1, y = -1, k = -1;
+        for (int i = 0; i < n; i ++ ) {
+            int v = nums[i];
+            if (v == minK) x = i;
+            if (v == maxK) y = i;
+            if (v < minK || v > maxK) k = i;
+            res += Math.max(Math.min(x, y) - k, 0);
+        }
+        return res;
+    }
+}
+~~~
+
+## 316场周赛
+
+#### Problem A - [判断两个事件是否存在冲突](https://leetcode.cn/problems/determine-if-two-events-have-conflict/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int get(String s) {
+        String[] ss = s.split(":");
+        return Integer.parseInt(ss[0]) * 60 + Integer.parseInt(ss[1]);
+    }
+    public boolean haveConflict(String[] a, String[] b) {
+        int t1 = get(a[0]), t2 = get(a[1]);
+        int t3 = get(b[0]), t4 = get(b[1]);
+        if (t2 < t3 || t4 < t1) return false;
+        return true;
+    }
+}
+~~~
+
+#### Problem B - [最大公因数等于 K 的子数组数目](https://leetcode.cn/problems/number-of-subarrays-with-gcd-equal-to-k/)
+
+**解法：枚举**
+
+~~~
+class Solution {
+    int gcd(int a, int b) {
+        return b != 0 ? gcd(b, a % b) : a;
+    }
+    public int subarrayGCD(int[] nums, int k) {
+        int n = nums.length, res = 0;
+        for (int i = 0; i < n; i ++ ) {
+            int p = nums[i];
+            for (int j = i; j < n; j ++ ) {
+                p = gcd(p, nums[j]);
+                if (p == k) res ++ ;
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [使数组相等的最小开销](https://leetcode.cn/problems/minimum-cost-to-make-array-equal/)
+
+**解法：数学**
+
+~~~
+class Solution {
+    public long minCost(int[] nums, int[] cost) {
+        var n = nums.length;
+        var list = new ArrayList<int[]>();
+        for (int i = 0; i < n; i ++ )
+            list.add(new int[]{nums[i], cost[i]});
+        Collections.sort(list, (a, b) -> {
+            return a[0] == b[0] ? a[1] - b[1] : a[0] - b[0];
+        });
+        var tot = 0l;
+        for (int x : cost)
+            tot += x;
+        var note = 0l;
+        var choose = 0;
+        for (int[] p : list) {
+            int num = p[0], c = p[1];
+            note += c;
+            if (note * 2 >= tot) {
+                choose = num;
+                break;
+            }
+        }
+        var res = 0l;
+        for (int[] p : list) {
+            int num = p[0], c = p[1];
+            res += c * 1l * Math.abs(num - choose);
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+~~~
+class Solution:
+    def minCost(self, nums: List[int], cost: List[int]) -> int:
+        tem = sorted(zip(nums, cost))
+        tot, note = sum(cost), 0
+        for num, c in tem:
+            note += c
+            if note * 2 >= tot:
+                choose = num
+                break
+        return sum(c * abs(num - choose) for num, c in tem)
+~~~
+
+
+
+#### Problem D - [使数组相似的最少操作次数](https://leetcode.cn/problems/minimum-number-of-operations-to-make-arrays-similar/)
+
+**解法：数学**
+
+~~~
+class Solution {
+    public long makeSimilar(int[] nums, int[] target) {
+        var n = nums.length;
+        var a = new Integer[n];
+        var b = new Integer[n];
+        for(var i = 0; i < n; i ++ ){
+            a[i] = nums[i];
+            b[i] = target[i];
+        }
+        Arrays.sort(a, (o1, o2)-> o1 % 2 == o2 % 2 ? o1 - o2 : o1 % 2 - o2 % 2);
+        Arrays.sort(b, (o1, o2)-> o1 % 2 == o2 % 2 ? o1 - o2 : o1 % 2 - o2 % 2);
+        var res = 0l;
+        for (var i = 0; i < n; i ++ )
+            res += Math.abs(a[i] - b[i]);
+        return res >> 2;
+    }
+}
+~~~
+
+
+
+~~~
+class Solution:
+    def makeSimilar(self, nums: List[int], target: List[int]) -> int:
+        nums.sort(key=lambda x: (x % 2, x))
+        target.sort(key=lambda x: (x % 2, x))
+        return sum(abs(x - y) for x, y in zip(nums, target)) // 4
+~~~
+
+## 90场双周赛
+
+#### Problem A - [差值数组不同的字符串](https://leetcode.cn/problems/odd-string-difference/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public String oddString(String[] words) {
+        int n = words.length, m = words[0].length();
+        int[][] d = new int[n][m - 1];
+        for (int i = 0; i < n; i ++ ) {
+            for (int j = 0; j < m - 1; j ++ ) {
+                d[i][j] = words[i].charAt(j + 1) - words[i].charAt(j);
+            }
+        }
+        Map<String, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i ++ ) {
+            var sb =  new StringBuilder();
+            for (int c : d[i])
+                sb.append(c).append(",");
+            var s = sb.toString();
+            if (!map.containsKey(s)) map.put(s, new ArrayList<>());
+            map.get(s).add(i);
+        }
+        for (var k : map.keySet()) {
+            if (map.get(k).size() == 1)
+                return words[map.get(k).get(0)];
+        }
+        return "";
+    }
+}
+~~~
+
+
+
+#### Problem B - [距离字典两次编辑以内的单词](https://leetcode.cn/problems/words-within-two-edits-of-dictionary/)
+
+**解法：枚举**
+
+~~~
+class Solution {
+    public List<String> twoEditWords(String[] q, String[] d) {
+        var res = new ArrayList<String>();
+        for (var s1 : q) {
+            for (var s2 : d) {
+                int k = 0;
+                for (int i = 0; i < s1.length(); i ++ ) {
+                    if (s1.charAt(i) != s2.charAt(i)) k ++ ;
+                    if (k > 2) break;
+                }
+                if (k <= 2) {
+                    res.add(s1);
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [摧毁一系列目标](https://leetcode.cn/problems/destroy-sequential-targets/)
+
+**解法：枚举**
+
+~~~
+class Solution {
+    public int destroyTargets(int[] nums, int space) {
+        var map = new TreeMap<Integer, Integer>();
+        Arrays.sort(nums);
+        for (int x : nums) {
+            map.put(x % space, map.getOrDefault(x % space, 0) + 1);
+        }
+        var n = nums.length;
+        int res = 0, p = 0;
+        for (var i = 0; i < n; i ++ ) {
+            int x = nums[i] % space;
+            if (map.get(x) > p) {
+                res = nums[i];
+                p = map.get(x);
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem D - [下一个更大元素 IV](https://leetcode.cn/problems/next-greater-element-iv/)
+
+**解法：单调栈**
+
+~~~
+class Solution {
+    public int[] secondGreaterElement(int[] nums) {
+        var n = nums.length;
+        var res = new int[n];
+        Arrays.fill(res, -1);
+        var s1 = new ArrayDeque<Integer>();
+        var s2 = new ArrayDeque<Integer>();
+        var tem = new ArrayDeque<Integer>();
+        for (int i = 0; i < n; i ++ ) {
+            while (!s2.isEmpty() && nums[s2.peek()] < nums[i])
+                res[s2.pop()] = nums[i];
+            while (!s1.isEmpty() && nums[s1.peek()] < nums[i]) 
+                tem.push(s1.pop());
+            while (!tem.isEmpty()) s2.push(tem.pop());
+            s1.push(i);
+        }
+        return res;
+    }
+}
+~~~
+
+**解法：单调栈&堆**
+
+~~~
+class Solution {
+    public int[] secondGreaterElement(int[] nums) {
+        var n = nums.length;
+        var res = new int[n];
+        Arrays.fill(res, -1);
+        var s1 = new ArrayDeque<Integer>();
+        var q = new PriorityQueue<Integer>((a, b) -> nums[a] - nums[b]);
+        for (int i = 0; i < n; i ++ ) {
+            while (!q.isEmpty() && nums[q.peek()] < nums[i]) 
+                res[q.poll()] = nums[i];  
+            while (!s1.isEmpty() && nums[s1.peek()] < nums[i]) 
+                q.add(s1.pop());
+            s1.push(i);
+        }
+        return res;
+    }
+}
+~~~
+

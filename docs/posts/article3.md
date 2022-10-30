@@ -37,7 +37,7 @@ void quick_sort(int q[], int l, int r)
 
 ~~~
 public int quick_select(int[] nums, int l, int r, int k) {
-	if (l == r) return nums[k];
+	if (l == r) return nums[l];
 	int x = nums[l], i = l - 1, j = r + 1;
 	while (i < j) {
 		do i ++ ; while (nums[i] > x);
@@ -644,6 +644,7 @@ int query(char *str)
 
 ### 1.朴素并查集
 
+~~~
     int p[N]; //存储每个点的祖宗节点
     
     // 返回x的祖宗节点
@@ -660,10 +661,10 @@ int query(char *str)
     // 初始化，假定节点编号是1 ~ n
     for (int i = 1; i <= n; i ++ ) p[i] = i;
 
-
+~~~
 
 ### 2.维护size的并查集
-
+~~~
     int p[N], size[N];
     //p[]存储每个点的祖宗节点, size[]只有祖宗节点的有意义，表示祖宗节点所在集合中的点的数量
     
@@ -685,9 +686,11 @@ int query(char *str)
         p[i] = i;
         size[i] = 1;
     }
+~~~
 
 ### 3.维护到祖宗节点距离的并查集
 
+~~~
     int p[N], d[N];
     //p[]存储每个点的祖宗节点, d[x]存储x到p[x]的距离
     
@@ -713,6 +716,8 @@ int query(char *str)
     // 合并a和b所在的两个集合：
     p[find(a)] = find(b);
     d[find(a)] = distance; // 根据具体问题，初始化find(a)的偏移量
+~~~
+
 ### 堆
 
 ~~~
@@ -759,7 +764,7 @@ for (int i = n / 2; i; i -- ) down(i);
 ### 一般哈希 
 
 ### 1.拉链法
-
+~~~
     int h[N], e[N], ne[N], idx;
     // 向哈希表中插入一个数
     void insert(int x)
@@ -780,9 +785,9 @@ for (int i = n / 2; i; i -- ) down(i);
     
         return false;
     }
-
+~~~
 ### 2.开放寻址法
-
+~~~
      int h[N];
     // 如果x在哈希表中，返回x的下标；如果x不在哈希表中，返回x应该插入的位置
     int find(int x)
@@ -795,6 +800,7 @@ for (int i = n / 2; i; i -- ) down(i);
         }
         return t;
     }
+~~~
 ### 字符串哈希
 
 核心思想：将字符串看成P进制数，P的经验值是131或13331，取这两个值的冲突概率低
@@ -822,7 +828,7 @@ ULL get(int l, int r)
 
 
 ### C++ STL简介
-
+~~~
     vector, 变长数组，倍增的思想
         size()  返回元素个数
         empty()  返回是否为空
@@ -920,7 +926,7 @@ ULL get(int l, int r)
     reset()  把所有位变成0
     flip()  等价于~
     flip(k) 把第k位取反
-
+~~~
 树与图的存储
 树是一种特殊的图，与图的存储方式相同。
 对于无向图中的边ab，存储两条有向边a->b, b->a。
@@ -1247,32 +1253,31 @@ static int[] dist = new int[N];
 static boolean[] st = new boolean[N];
 
 public static int dijkstra() {
-        Arrays.fill(dist,0x3f3f3f3f);
-        dist[1] = 0;
-        for (int i = 0; i < n; i ++ ) {
-            int t = -1;
-            for (int j = 1; j <= n; j ++ ) {
-                if (!st[j] && (t == -1 || dist[t] > dist[j])) {
-                    t = j;
-                }
-            }
-            if (t == n) break;
-            st[t] = true;
-            for (int j = 1; j <= n; j ++ ) {
-                dist[j] = Math.min(dist[j], dist[t] + g[t][j]);
+    Arrays.fill(dist,0x3f3f3f3f);
+    dist[1] = 0;
+    for (int i = 0; i < n; i ++ ) {
+        int t = -1;
+        for (int j = 1; j <= n; j ++ ) {
+            if (!st[j] && (t == -1 || dist[t] > dist[j])) {
+                t = j;
             }
         }
-        if (dist[n] == 0x3f3f3f3f) return -1;
-        return dist[n];
+        if (t == n) break;
+        st[t] = true;
+        for (int j = 1; j <= n; j ++ ) {
+            dist[j] = Math.min(dist[j], dist[t] + g[t][j]);
+        }
     }
+    if (dist[n] == 0x3f3f3f3f) return -1;
+    return dist[n];
+}
 ~~~
 
 
 
 ### 堆优化版dijkstra 
 
-
-
+~~~
     时间复杂度 O(mlogn)O(mlogn), nn 表示点数，mm 表示边数
     typedef pair<int, int> PII;
     
@@ -1312,7 +1317,7 @@ public static int dijkstra() {
         if (dist[n] == 0x3f3f3f3f) return -1;
         return dist[n];
     }
-
+~~~
 
 ~~~
 static final int N = 100010;
@@ -1416,6 +1421,7 @@ private static int bellman_ford() {
 
 ### spfa 算法（队列优化的Bellman-Ford算法） 
 
+~~~
     时间复杂度 平均情况下 O(m)O(m)，最坏情况下 O(nm)O(nm), nn 表示点数，mm 表示边数
     int n;      // 总点数
     int h[N], w[N], e[N], ne[N], idx;       // 邻接表存储所有边
@@ -1455,7 +1461,7 @@ private static int bellman_ford() {
     	if (dist[n] == 0x3f3f3f3f) return -1;
     	return dist[n];
     }
-
+~~~
 ~~~
 static final int N = 100010;
     static int n, m;
@@ -1496,7 +1502,7 @@ static final int N = 100010;
 
 
 ### spfa判断图中是否存在负环 
-
+~~~
     时间复杂度是 O(nm)O(nm), nn 表示点数，mm 表示边数
     int n;      // 总点数
     int h[N], w[N], e[N], ne[N], idx;       // 邻接表存储所有边
@@ -1542,7 +1548,7 @@ static final int N = 100010;
     return false;
     }
 
-
+~~~
 ### floyd算法 
 
 ~~~
@@ -2628,7 +2634,7 @@ Arrays.stream(f).max().getAsInt();
 ### java快读快写模板
 
 ~~~
-static BufferedReader bf = new BufferedReader(new BufferedReader(new InputStreamReader(System.in)));
+static BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 static StreamTokenizer in = new StreamTokenizer(new BufferedReader(new InputStreamReader(System.in)));
 static PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
 ~~~

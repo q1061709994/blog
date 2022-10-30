@@ -2,7 +2,7 @@ import { hopeTheme } from "vuepress-theme-hope";
 import navbar from "./navbar";
 import sidebar from "./sidebar";
 export default hopeTheme({
-  hostname: "https://gitee.com/paramhh/blog",
+  hostname: "https://github.com/q1061709994/blog",
 
   author: {
     name: "huan",
@@ -13,7 +13,7 @@ export default hopeTheme({
 
   logo: "/logo.svg",
 
-  repo: "https://gitee.com/paramhh/blog",
+  repo: "https://github.com/q1061709994/blog",
 
   docsDir: "demo/src",
   pure: true,
