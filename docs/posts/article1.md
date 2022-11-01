@@ -5026,6 +5026,29 @@ class Solution:
         return sum(v[idx] == ruleValue for v in items)
 ~~~
 
+#### [481. 神奇字符串](https://leetcode.cn/problems/magical-string/)
+
+~~~
+class Solution {
+    public int magicalString(int n) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("122");
+        int num = 1;
+        for (int i = 2; sb.length() <= n; i ++ ) {
+            char c = sb.charAt(i);
+            if (c == '1') sb.append(num);
+            else sb.append(num).append(num);
+            num ^= 3;
+        }
+        int res = 0;
+        for (int i = 0; i < n; i ++ )
+            if (sb.charAt(i) == '1')
+                res ++ ;
+        return res;
+    }
+}
+~~~
+
 
 
 ## 数论

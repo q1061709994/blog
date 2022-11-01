@@ -2844,3 +2844,104 @@ class Solution {
 }
 ~~~
 
+## 317场周赛
+
+#### Problem A - [可被三整除的偶数的平均值](https://leetcode.cn/problems/average-value-of-even-numbers-that-are-divisible-by-three/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int averageValue(int[] nums) {
+        int sum = 0, cnt = 0;
+        for (var x : nums)
+            if (x % 2 == 0 && x % 3 == 0) {
+                sum += x;
+                cnt ++ ;
+            }
+        return cnt == 0 ? 0 : sum / cnt;
+    }
+}
+~~~
+
+#### Problem B - [最流行的视频创作者](https://leetcode.cn/problems/most-popular-video-creator/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public List<List<String>> mostPopularCreator(String[] creators, String[] ids, int[] views) {
+        int n = creators.length;
+        var max = 0l;
+        List<List<String>> res = new ArrayList<>();
+        Map<String, Long> m1 = new HashMap<>();
+        Map<String, Integer> m2 = new HashMap<>();
+        for (int i = 0; i < n; i ++ ) {
+            var creator = creators[i];
+            var id = ids[i];
+            var view = views[i];
+            m1.put(creator, m1.getOrDefault(creator, 0l) + view);
+            max = Math.max(max, m1.get(creator));
+            if (m2.containsKey(creator)) {
+                if (view > views[m2.get(creator)]) {
+                    m2.put(creator, i);
+                } else if (view == views[m2.get(creator)]) {
+                    if (ids[m2.get(creator)].compareTo(id) > 0) {
+                        m2.put(creator, i);
+                    }
+                }
+            } else {
+                m2.put(creator, i);
+            }
+        }
+        for (var creator : m1.keySet()) {
+            if (m1.get(creator) == max) {
+                res.add(List.of(creator, ids[m2.get(creator)]));
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [美丽整数的最小增量](https://leetcode.cn/problems/minimum-addition-to-make-integer-beautiful/)
+
+**解法：数学&模拟**
+
+~~~
+class Solution {
+    public int f(List<Integer> A) {
+        var sm = 0;
+        for (var x : A) sm += x;
+        return sm;
+    }
+    public long makeIntegerBeautiful(long n, int target) {
+        var A = new ArrayList<Integer>();
+        var t = n;
+        while (t != 0) {
+            A.add((int)(t % 10));
+            t /= 10;
+        }
+        A.add(0);
+        if (f(A) <= target) return 0;
+        var res = 0l;
+        var p = 1l;
+        for (var i = 0; i + 1 < A.size(); i ++, p *= 10) {
+            res += (10l - A.get(i)) * p;
+            A.set(i, 0);
+            A.set(i + 1, A.get(i + 1) + 1);
+            if (A.get(i + 1) == 10) continue;
+            if (f(A) <= target) break;
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem D - [移除子树后的二叉树高度](https://leetcode.cn/problems/height-of-binary-tree-after-subtree-removal-queries/)
+
+**解法：dfs**
