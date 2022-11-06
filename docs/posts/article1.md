@@ -5049,6 +5049,70 @@ class Solution {
 }
 ~~~
 
+#### [1106. 解析布尔表达式](https://leetcode.cn/problems/parsing-a-boolean-expression/)
+
+~~~
+class Solution {
+    public char calc(char top, char cur, char op) {
+        boolean x = top == 't', y = cur == 't';
+        var res = op == '|' ? x | y : x & y;
+        return res ? 't' : 'f';
+    }
+    public boolean parseBoolExpr(String s) {
+        ArrayDeque<Character> nums = new ArrayDeque<>();
+        ArrayDeque<Character> ops = new ArrayDeque<>();
+        var n = s.length();
+        for (char c : s.toCharArray()) {
+            if (c == ',') continue;
+            else if (c == 't' || c == 'f') nums.addLast(c);
+            else if (c == '!' || c == '&' || c == '|') ops.addLast(c);
+            else if (c == '(') nums.addLast(c);
+            else {
+                var op = ops.pollLast();
+                var cur = nums.pollLast();
+                while (!nums.isEmpty() && nums.peekLast() != '(') {
+                    cur = calc(nums.pollLast(), cur, op);
+                }
+                if (op == '!') cur = cur == 't' ? 'f' : 't';
+                nums.pollLast();
+                nums.addLast(cur);
+            }
+        }
+        return nums.pollLast() == 't';
+    }
+}
+~~~
+
+~~~
+class Solution {
+    String ex;
+    int k;
+    public boolean dfs() {
+        if (ex.charAt(k) == 't' && k ++ > 0) return true;
+        if (ex.charAt(k) == 'f' && k ++ > 0) return false;
+        var op = ex.charAt(k);
+        k += 2;
+        //初始化答案，如果op为|的话需要初始化为false
+        var res = op == '|' ? false : true;
+        while (ex.charAt(k) != ')') {
+            if (ex.charAt(k) == ',') {
+                k ++ ;
+            } else {
+                var t = dfs();
+                res = op == '|' ? res | t : res & t;
+            }
+        }
+        k ++ ;
+        return op == '!' ? !res : res;
+    }
+    public boolean parseBoolExpr(String expression) {
+        ex = expression;
+        k = 0;
+        return dfs();
+    }
+}
+~~~
+
 
 
 ## 数论
@@ -5110,6 +5174,24 @@ class Solution {
             }     
         }
         return cnt;
+    }
+}
+~~~
+
+#### [754. 到达终点数字](https://leetcode.cn/problems/reach-a-number/)
+
+根据超出t的步数分类讨论，超出偶数步可将（sum - t）/ 2处取反，奇数步的话看走完下一步超出的是奇数还是偶数，奇数的话位k+1，否则为k+2
+
+~~~
+class Solution {
+    public int reachNumber(int target) {
+        target = Math.abs(target);
+        var k = 0;
+        while (target > 0) {
+            k ++ ;
+            target -= k;
+        }
+        return target % 2 == 0 ? k : k + 1 + k % 2;
     }
 }
 ~~~
@@ -6068,6 +6150,30 @@ class Solution {
     }
 }
 ~~~
+
+#### [1668. 最大重复子字符串](https://leetcode.cn/problems/maximum-repeating-substring/)
+
+**解法：动态规划**
+
+~~~~
+class Solution {
+    public int maxRepeating(String a, String b) {
+        int n = a.length(), m = b.length();
+        var f = new int[n];
+        if (n < m) return 0;
+        out:for (int i = m - 1; i < n; i ++ ) {
+            boolean flag = true;
+            for (int j = 0; j < m; j ++ ) {
+                if (a.charAt(i - m + 1 + j) != b.charAt(j)) {
+                    continue out;
+                }
+            }
+            f[i] = (i == m - 1 ? 0 : f[i - m]) + 1;
+        }
+        return Arrays.stream(f).max().getAsInt();
+    }
+}
+~~~~
 
 
 

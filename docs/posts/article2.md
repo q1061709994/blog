@@ -2945,3 +2945,97 @@ class Solution {
 #### Problem D - [移除子树后的二叉树高度](https://leetcode.cn/problems/height-of-binary-tree-after-subtree-removal-queries/)
 
 **解法：dfs**
+
+## 318场周赛
+
+#### Problem A - [对数组执行操作](https://leetcode.cn/problems/apply-operations-to-an-array/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int[] applyOperations(int[] nums) {
+        var n = nums.length;
+        for (var i = 0; i < n - 1; i ++ ) {
+            if (nums[i] == nums[i + 1]) {
+                nums[i] *= 2;
+                nums[i + 1] = 0;
+            }
+        }
+        var idx = 0;
+        for (int i = 0; i < n; i ++ ) 
+            if (nums[i] != 0)
+                nums[idx ++ ] = nums[i];
+        while (idx < n) nums[idx ++ ] = 0;
+        return nums;
+    }
+}
+~~~
+
+
+
+#### Problem B - [长度为 K 子数组中的最大和](https://leetcode.cn/problems/maximum-sum-of-distinct-subarrays-with-length-k/)
+
+**解法：滑动窗口**
+
+~~~
+class Solution {
+    public long maximumSubarraySum(int[] nums, int k) {
+        var res = 0l;
+        var n = nums.length;
+        var map = new int[100010];
+        var s = new long[n + 1];
+        for (int i = 0; i < n; i ++ )
+            s[i + 1] = s[i] + nums[i] * 1l;
+        for (int i = 0, j = 0; i < n; i ++ ) {
+            map[nums[i]] ++ ;
+            while (map[nums[i]] > 1 || i - j + 1 > k)
+                map[nums[j ++ ]] -- ;
+            if (i - j + 1 == k)
+                res = Math.max(res, s[i + 1] - s[j]);
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [雇佣 K 位工人的总代价](https://leetcode.cn/problems/total-cost-to-hire-k-workers/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public long totalCost(int[] costs, int k, int candidates) {
+        var qf = new PriorityQueue<Integer>();
+        var qe = new PriorityQueue<Integer>();
+        var n = costs.length;
+        for (int i = 0; i < candidates; i ++ ) 
+            qf.add(costs[i]);
+        for (int i = Math.max(n - candidates, candidates); i < n; i ++ )
+            qe.add(costs[i]);
+        int i = candidates, j = n - candidates - 1;
+        var res = 0l;
+        while (k -- > 0) {
+            if (qe.isEmpty() || (!qf.isEmpty() && qf.peek() <= qe.peek())) {
+                res += qf.poll();
+                if (i <= j) 
+                    qf.add(costs[i ++ ]);
+            } else {
+                res += qe.poll();
+                if (i <= j) 
+                    qe.add(costs[j -- ]);
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem D - [最小移动总距离](https://leetcode.cn/problems/minimum-total-distance-traveled/)
+
+**解法：动态规划**
+
