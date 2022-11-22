@@ -1,0 +1,5 @@
+
+User-agent:*
+Disallow:
+
+Sitemap: https://github.com/q1061709994/blog/blog/sitemap.xml
