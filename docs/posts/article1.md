@@ -1708,6 +1708,30 @@ class Solution {
 }
 ~~~
 
+#### [878. 第 N 个神奇数字](https://leetcode.cn/problems/nth-magical-number/)
+
+~~~
+class Solution {
+    int mod = (int) 1e9 + 7;
+
+    private int gcd(int a, int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+    
+    public int nthMagicalNumber(int n, int a, int b) {
+        long l = 0l, r = (long) Math.max(a, b) * n;
+        var lcm = a * b / gcd(a, b);
+        while (l < r) {
+            var mid = l + r >> 1;
+            var k = mid /a + mid / b - mid / lcm;
+            if (k >= n) r = mid;
+            else l = mid + 1;
+        }
+        return (int) (l % mod);   
+    }
+}
+~~~
+
 
 
 ## 前缀和
@@ -5113,6 +5137,209 @@ class Solution {
 }
 ~~~
 
+#### [816. 模糊坐标](https://leetcode.cn/problems/ambiguous-coordinates/)
+
+~~~
+class Solution {
+    String s;
+    public List<String> ambiguousCoordinates(String _s) {
+        s = _s.substring(1, _s.length() - 1);
+        var n = s.length();
+        var res = new ArrayList<String>();
+        for (var i = 0; i < n - 1; i ++ ) {
+            var a = search(0, i);
+            var b = search(i + 1, n - 1);
+            for (var x : a)
+                for (var y : b)
+                    res.add("(" + x + ", " + y + ")");
+        }
+        return res;
+    }
+
+    public List<String> search(int start, int end) {
+        var res = new ArrayList<String>();
+        if (start == end || s.charAt(start) != '0') res.add(s.substring(start, end + 1));
+        //枚举小数点
+        for (int i = start; i < end; i ++ ) {
+            var a = s.substring(start, i + 1);
+            var b = s.substring(i + 1, end + 1);
+            if (a.length() > 1 && a.charAt(0) == '0') continue;
+            if (b.charAt(b.length() - 1) == '0') continue;
+            res.add(a + "." + b);
+        }
+        return res;
+    }
+}
+~~~
+
+#### [5. 最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
+
+**解法：中心扩展**
+
+~~~
+class Solution {
+    public String longestPalindrome(String s) {
+        var n = s.length();
+        var res = "";
+        for (int i = 0; i < 2 * n - 1; i ++ ) {
+            int l = i / 2, r = l + i % 2;
+            while (l >= 0 && r < n && s.charAt(l) == s.charAt(r)) {
+                l -- ;
+                r ++ ;
+            } 
+            if (r - l - 1 >= res.length())
+                res = s.substring(l + 1, r);
+        }
+        return res;
+    }
+}
+~~~
+
+#### [792. 匹配子序列的单词数](https://leetcode.cn/problems/number-of-matching-subsequences/)
+
+~~~
+class Solution {
+    public int numMatchingSubseq(String s, String[] words) {
+        var ss = s.toCharArray();
+        var n = ss.length;
+        //记录每个位置的下一个某个字母的下标
+        var ne = new int[n + 1][26];
+        var pos = new int[26];
+        Arrays.fill(pos, -1);
+        for (var i = 0; i <= n; i ++ ) Arrays.fill(ne[i], -1);
+        for (int i = n - 1; i >= 0; i -- ) {
+            pos[ss[i] - 'a'] = i;
+            ne[i] = pos.clone();
+        }
+        var res = words.length;
+        for (var word : words) {
+            var pre = 0;
+            for (var c : word.toCharArray()) {
+                pre = ne[pre][c - 'a'];
+                if (pre == -1) {
+                    res -- ;
+                    break;
+                }
+                pre ++ ;
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+#### [460. LFU 缓存](https://leetcode.cn/problems/lfu-cache/)
+
+~~~
+class LFUCache {
+    int n;
+    Block headBlock, tailBlock;
+    Map<Integer, Block> blockCache = new HashMap<>();
+    Map<Integer, Node> nodeCache = new HashMap<>();
+
+    public LFUCache(int capacity) {
+        n = capacity;
+        headBlock = new Block(Integer.MAX_VALUE);
+        tailBlock = new Block(0);
+        headBlock.next = tailBlock;
+        tailBlock.pre = headBlock;
+    }
+    
+    private void insert(Block p) {
+        Block block = new Block(p.cnt + 1);
+        p.pre.next = block;
+        block.pre = p.pre;
+        block.next = p;
+        p.pre = block;
+    }
+
+    private void remove(Block p) {
+        p.pre.next = p.next;
+        p.next.pre = p.pre;
+    }
+
+    public int get(int key) {
+        Block block = blockCache.get(key);
+        if (block == null) return -1;
+        Node node = nodeCache.get(key);
+
+        block.remove(node);
+        // 需要插入到一个新的 block 中
+        if (block.pre.cnt != block.cnt + 1) {
+            insert(block);
+        }
+
+        // 将当前node 插入到新的 block中
+        block.pre.insert(node);
+        blockCache.put(key, block.pre);
+        if (block.isEmpty()) remove(block);
+        return node.val;
+    }
+    
+    public void put(int key, int value) {
+        if (n == 0) return;
+        if (blockCache.containsKey(key)) {
+            nodeCache.get(key).val = value;
+            get(key);
+        } else {
+            if (nodeCache.size() == n) {
+                Node node = tailBlock.pre.tail.pre;
+                tailBlock.pre.remove(node);
+                if (tailBlock.pre.isEmpty()) remove(tailBlock.pre);
+
+                blockCache.remove(node.key);
+                nodeCache.remove(node.key);
+            }
+            Node node = new Node(key, value);
+            if (tailBlock.pre.cnt != 1) insert(tailBlock);
+
+            tailBlock.pre.insert(node);
+            blockCache.put(key, tailBlock.pre);
+            nodeCache.put(key, node);
+        }
+    }
+
+    public class Node {
+        int key, val;
+        Node pre, next;
+        public Node(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    public class Block {
+        //使用次数
+        int cnt;
+        Node head, tail;
+        Block pre, next;
+        public Block(int cnt) {
+            this.cnt = cnt;
+            head = new Node(-1, -1);
+            tail = new Node(-1, -1);
+            head.next = tail;
+            tail.pre = head;
+        }
+
+        public void remove(Node p) {
+            p.pre.next = p.next;
+            p.next.pre = p.pre;
+        }
+
+        public void insert(Node p) {
+            head.next.pre = p;
+            p.pre = head;
+            p.next = head.next;
+            head.next = p;
+        }
+
+        public boolean isEmpty() {
+            return head.next == tail;
+        }
+    }
+}
+~~~
+
 
 
 ## 数论
@@ -5615,6 +5842,61 @@ class Solution {
 #### [面试题 08.10. 颜色填充](https://leetcode-cn.com/problems/color-fill-lcci/)
 
 #### [1034. 边界着色](https://leetcode-cn.com/problems/coloring-a-border/)
+
+#### [882. 细分图中的可到达节点](https://leetcode.cn/problems/reachable-nodes-in-subdivided-graph/)
+
+**解法：dijkstra**
+
+~~~
+class Solution {
+    public int reachableNodes(int[][] edges, int maxMoves, int n) {
+        List<int[]>[] g = new ArrayList[n];
+        Arrays.setAll(g, e -> new ArrayList<>());
+        for (var e : edges) {
+            int a = e[0], b = e[1], v = e[2];
+            g[a].add(new int[]{b, v + 1});
+            g[b].add(new int[]{a, v + 1});
+        }
+
+        var dist = dijkstra(g, 0);
+        var res = 0;
+        for (var d : dist)
+            if (d <= maxMoves)
+                res ++ ;
+        for (var e : edges) {
+            int a = e[0], b = e[1], v = e[2];
+            int x = Math.max(maxMoves - dist[a], 0);
+            int y = Math.max(maxMoves - dist[b], 0);
+            res += Math.min(x + y, v);
+        }
+        return res;
+    }
+
+    public int[] dijkstra(List<int[]>[] g, int start) {
+        var dist = new int[g.length];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[start] = 0;
+        var pq = new PriorityQueue<int[]>((a, b) -> a[1] - b[1]);
+        pq.add(new int[]{start, 0});
+        while (!pq.isEmpty()) {
+            var p = pq.poll();
+            int x = p[0], d = p[1];
+            if (d > dist[x]) continue;
+            for (var e : g[x]) {
+                int y = e[0];
+                int newDist = d + e[1];
+                if (newDist < dist[y]) {
+                    dist[y] = newDist;
+                    pq.offer(new int[]{y, newDist});
+                }
+            }
+        }
+        return dist;
+    }
+}
+~~~
+
+
 
 ## DP
 
@@ -6174,6 +6456,39 @@ class Solution {
     }
 }
 ~~~~
+
+
+
+#### [808. 分汤](https://leetcode.cn/problems/soup-servings/)
+
+~~~
+class Solution {
+    public int g(int x) {
+        return Math.max(x, 0);
+    }
+    public double soupServings(int n) {
+        n = (n + 25 - 1) / 25;
+        if (n >= 500) return 1.0;
+        //  f[i][j] 为 汤A 剩余 i 毫升，汤B 剩余 j 毫升时的最终概率
+        var f = new double[n + 1][n + 1];
+        for (var i = 0; i <= n; i ++ ) {
+            for (var j = 0; j <= n; j ++ ) {
+                if (i == 0 && j == 0) f[i][j] = 0.5;
+                else if (i == 0 && j != 0) f[i][j] = 1;
+                else if (i != 0 && j == 0) f[i][j] = 0;
+                else {
+                    f[i][j] += f[g(i - 4)][j];
+                    f[i][j] += f[g(i - 3)][g(j - 1)];
+                    f[i][j] += f[g(i - 2)][g(j - 2)];
+                    f[i][j] += f[g(i - 1)][g(j - 3)];
+                    f[i][j] /= 4;
+                }
+            }
+        }
+        return f[n][n];
+    }
+}
+~~~
 
 
 
@@ -7038,6 +7353,51 @@ class Solution {
                 if (m2.containsKey(nidx)) return step + 1 + m2.get(nidx);
                 q.add(new int[]{nx, ny});
                 m1.put(nidx, step + 1);
+            }
+        }
+        return -1;
+    }
+}
+~~~
+
+#### [864. 获取所有钥匙的最短路径](https://leetcode.cn/problems/shortest-path-to-get-all-keys/)
+
+**解法：BFS&状态压缩**
+
+~~~
+class Solution {
+    static int N = 35, K = 6, INF = 0x3f3f3f3f;
+    static int[][][] dist = new int[N][N][1 << K];
+    static int[][] dirs = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    public int shortestPathAllKeys(String[] g) {
+        int n = g.length, m = g[0].length(), cnt = 0;
+        var q = new ArrayDeque<int[]>();
+        for (int i = 0; i < n; i ++ ) {
+            for (int j = 0; j < m; j ++ ) {
+                Arrays.fill(dist[i][j], INF);
+                char c = g[i].charAt(j);
+                if (c == '@') {
+                    q.add(new int[]{i, j, 0});
+                    dist[i][j][0] = 0;
+                } else if (c >= 'a' && c <= 'z') cnt ++ ;
+            }
+        }
+
+        while (!q.isEmpty()) {
+            var info = q.poll();
+            int x = info[0], y = info[1], cur = info[2], step = dist[x][y][cur];
+            for (var d : dirs) {
+                int nx = x + d[0], ny = y + d[1];
+                if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+                var c = g[nx].charAt(ny);
+                if (c == '#') continue;
+                if (c >= 'A' && c <= 'Z' && (cur >> (c - 'A') & 1) == 0) continue;
+                var ncur = cur;
+                if (c >= 'a' && c <= 'z') ncur |= 1 << (c - 'a');
+                if (ncur == (1 << cnt) - 1) return step + 1;
+                if (step + 1 >= dist[nx][ny][ncur]) continue;
+                dist[nx][ny][ncur] = step + 1;
+                q.add(new int[]{nx, ny, ncur});
             }
         }
         return -1;
@@ -8740,6 +9100,61 @@ class Solution {
                 s.setCharAt(u, (char)(s.charAt(u) ^ 32));
             }
         }
+    }
+}
+~~~
+
+#### [6240. 树上最大得分和路径](https://leetcode.cn/problems/most-profitable-path-in-a-tree/)
+
+~~~
+class Solution {
+    int n;
+    int[] bt, p, w;
+    List<Integer>[] g;
+    public void dfs1(int u, int fa) {
+        for (var v : g[u]) {
+            if (v == fa) continue;
+            p[v] = u;
+            dfs1(v, u);
+        }
+    }
+
+    public int dfs2(int u, int fa, int t) {
+        var val = 0;
+        if (bt[u] == -1 || t < bt[u]) val = w[u];
+        else if (bt[u] == t) val = w[u] / 2;
+        var mx = (int) -2e9;
+        for (var v : g[u]) {
+            if (v == fa) continue;
+            mx = Math.max(mx, dfs2(v, u, t + 1));
+        }
+        if (mx == (int) -2e9) mx = 0;
+        return mx + val;
+    }
+
+    public int mostProfitablePath(int[][] edges, int bob, int[] amount) {
+        w = amount;
+        n = amount.length;
+        bt = new int[n];
+        p = new int[n];
+        g = new ArrayList[n];
+        Arrays.setAll(g, e -> new ArrayList<>());
+        for (var e : edges) {
+            int a = e[0], b = e[1];
+            g[a].add(b);
+            g[b].add(a);
+        }
+        //找到每个点的父节点
+        dfs1(0, -1);
+        Arrays.fill(bt, -1);
+        var t = 0;
+        while (true) {
+            bt[bob] = t;
+            t ++ ;
+            if (bob == 0) break;
+            bob = p[bob];
+        }
+        return dfs2(0, -1, 0);
     }
 }
 ~~~

@@ -3039,3 +3039,633 @@ class Solution {
 
 **解法：动态规划**
 
+
+
+## 91场双周赛
+
+#### Problem A - [不同的平均值数目](https://leetcode.cn/problems/number-of-distinct-averages/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int distinctAverages(int[] nums) {
+        Arrays.sort(nums);
+        var n = nums.length;
+        var set = new HashSet<Integer>();
+        for (int i = 0, j = n - 1; i < j; i ++ , j -- ) {
+            set.add(nums[i] + nums[j]);
+        }
+        return set.size();
+    }
+}
+~~~
+
+
+
+#### Problem B - [统计构造好字符串的方案数](https://leetcode.cn/problems/count-ways-to-build-good-strings/)
+
+**解法：递推**
+
+~~~
+class Solution {
+    int MOD = (int) 1e9 + 7;
+    public int countGoodStrings(int l, int h, int zero, int one) {
+        int res = 0;
+        var f = new long[h + 1];
+        for (int i = 1; i <= h; i ++ ) {
+            if (i - zero >= 0)
+                f[i] = (f[i] + f[i - zero] + 1) % MOD;
+            if (i - one >= 0)
+                f[i] = (f[i] + f[i - one] + 1) % MOD; 
+        }
+        return (int)(f[h] + MOD - f[l - 1]) % MOD;
+    }
+}
+~~~
+
+
+
+#### Problem C - [树上最大得分和路径](https://leetcode.cn/problems/most-profitable-path-in-a-tree/)
+
+**解法：枚举&dfs**
+
+~~~
+class Solution {
+    int n;
+    int[] bt, p, w;
+    List<Integer>[] g;
+    public void dfs1(int u, int fa) {
+        for (var v : g[u]) {
+            if (v == fa) continue;
+            p[v] = u;
+            dfs1(v, u);
+        }
+    }
+
+    public int dfs2(int u, int fa, int t) {
+        var val = 0;
+        if (bt[u] == -1 || t < bt[u]) val = w[u];
+        else if (bt[u] == t) val = w[u] / 2;
+        var mx = (int) -2e9;
+        for (var v : g[u]) {
+            if (v == fa) continue;
+            mx = Math.max(mx, dfs2(v, u, t + 1));
+        }
+        if (mx == (int) -2e9) mx = 0;
+        return mx + val;
+    }
+
+    public int mostProfitablePath(int[][] edges, int bob, int[] amount) {
+        w = amount;
+        n = amount.length;
+        bt = new int[n];
+        p = new int[n];
+        g = new ArrayList[n];
+        Arrays.setAll(g, e -> new ArrayList<>());
+        for (var e : edges) {
+            int a = e[0], b = e[1];
+            g[a].add(b);
+            g[b].add(a);
+        }
+        //找到每个点的父节点
+        dfs1(0, -1);
+        Arrays.fill(bt, -1);
+        var t = 0;
+        while (true) {
+            bt[bob] = t;
+            t ++ ;
+            if (bob == 0) break;
+            bob = p[bob];
+        }
+        return dfs2(0, -1, 0);
+    }
+}
+~~~
+
+**链式前向星建图**
+
+~~~
+class Solution {
+    int n;
+    int idx;
+    int[] e, h, ne;
+    int[] bt, p, w;
+    public void add(int a, int b) {
+        e[idx] = b;
+        ne[idx] = h[a];
+        h[a] = idx ++ ;
+    }
+
+    public void dfs1(int u, int fa) {
+        for (var i = h[u]; i != -1; i = ne[i]) {
+            var v = e[i];
+            if (v == fa) continue;
+            p[v] = u;
+            dfs1(v, u);
+        }
+    }
+
+    public int dfs2(int u, int fa, int t) {
+        var val = 0;
+        if (bt[u] == -1 || t < bt[u]) val = w[u];
+        else if (bt[u] == t) val = w[u] / 2;
+        var mx = (int) -2e9;
+        for (var i = h[u]; i != -1; i = ne[i]) {
+            var v = e[i];
+            if (v == fa) continue;
+            mx = Math.max(mx, dfs2(v, u, t + 1));
+        }
+        if (mx == (int) -2e9) mx = 0;
+        return mx + val;
+    }
+
+    public int mostProfitablePath(int[][] edges, int bob, int[] amount) {
+        w = amount;
+        n = amount.length;
+        bt = new int[n];
+        p = new int[n];
+        e = new int[n * 2];
+        ne = new int[n * 2];
+        h = new int[n];
+        Arrays.fill(h, -1);
+        for (var e : edges) {
+            int a = e[0], b = e[1];
+            add(a, b);
+            add(b, a);
+        }
+        //找到每个点的父节点
+        dfs1(0, -1);
+        Arrays.fill(bt, -1);
+        var t = 0;
+        while (true) {
+            bt[bob] = t;
+            t ++ ;
+            if (bob == 0) break;
+            bob = p[bob];
+        }
+        return dfs2(0, -1, 0);
+    }
+}
+~~~
+
+
+
+#### Problem D - [根据限制分割消息](https://leetcode.cn/problems/split-message-based-on-limit/)
+
+**解法：枚举 & 模拟**
+
+
+
+## 319场周赛
+
+#### Problem A - [温度转换](https://leetcode.cn/problems/convert-the-temperature/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public double[] convertTemperature(double celsius) {
+        return new double[]{celsius + 273.15, celsius * 1.80 +};
+    }
+}
+~~~
+
+
+
+#### Problem B - [最小公倍数为 K 的子数组数目](https://leetcode.cn/problems/number-of-subarrays-with-lcm-equal-to-k/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    int gcd(int a, int b) {
+        return b != 0 ? gcd(b, a % b) : a;
+    }
+
+    int lcm(int a, int b) {
+        return a * b / gcd(a, b);
+    }
+
+    public int subarrayLCM(int[] nums, int k) {
+        int n = nums.length, res = 0;
+        for (int i = 0; i < n; i ++ ) {
+            for (int j = i, p = 1; j < n; j ++ ) {
+                p = lcm(p, nums[j]);
+                if (k % p != 0) break; //剪枝，lcm必须是k的因子
+                if (p == k) res ++ ;
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [逐层排序二叉树所需的最少操作数目](https://leetcode.cn/problems/minimum-number-of-operations-to-sort-a-binary-tree-by-level/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public void swap(int[] arr, int a, int b) {
+        int t = arr[a];
+        arr[a] = arr[b];
+        arr[b] = t;
+    }
+
+    public int caclSortedNum(int[] a) {
+        var map = new HashMap<Integer, Integer>();
+        var b = a.clone();
+        var n = a.length;
+        var res = 0;
+        Arrays.sort(b);
+        for (int i = 0; i < n; i ++ ) map.put(b[i], i);
+        for (int i = 0; i < n; i ++ ) {
+            while (a[i] != b[i]) {
+                swap(a, i, map.get(a[i]));
+                res ++ ;
+            }
+        }
+        return res;
+    }
+
+    public int minimumOperations(TreeNode root) {
+        if (root == null) return 0;
+        var q = new ArrayDeque<TreeNode>();
+        var res = 0;
+        q.add(root);
+        while (!q.isEmpty()) {
+            var size = q.size();
+            while (size -- > 0) {
+                var cur = q.poll();
+                if (cur.left != null) q.add(cur.left);
+                if (cur.right != null) q.add(cur.right);
+            }
+            var temp = q.stream().mapToInt(x -> x.val).toArray();
+            res += caclSortedNum(temp);
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+####  Problem D - [不重叠回文子字符串的最大数目](https://leetcode.cn/problems/maximum-number-of-non-overlapping-palindrome-substrings/)
+
+**解法：DP&中心扩展**
+
+~~~
+class Solution {
+    public int maxPalindromes(String S, int k) {
+        var s = S.toCharArray();
+        var n = s.length;
+        var f = new int[n + 1];
+        for (var i = 0; i < 2 * n - 1; i ++ ) {
+            int l = i / 2, r = l + i % 2; // 中心扩展法
+            f[l + 1] = Math.max(f[l + 1], f[l]);
+            for (; l >= 0 && r < n && s[l] == s[r]; l -- , r ++ )
+                if (r - l + 1 >= k)
+                    f[r + 1] = Math.max(f[r + 1], f[l] + 1);
+        }
+        return f[n];
+    }
+}
+
+~~~
+
+## 320场周赛
+
+#### Problem A - [数组中不等三元组的数目](https://leetcode.cn/problems/number-of-unequal-triplets-in-array/)
+
+**解法：模拟**
+
+~~~~
+class Solution {
+    public int unequalTriplets(int[] nums) {
+        var res = 0;
+        var n = nums.length;
+        for (var i = 0; i < n; i ++ )
+            for (var j = i + 1; j < n; j ++ )
+                for (var k = j + 1; k < n; k ++ )
+                    if (nums[i] != nums[j] && nums[i] != nums[k] && nums[j] != nums[k])
+                        res ++ ;
+        return res;
+    }
+}
+~~~~
+
+
+
+#### Problem B - [二叉搜索树最近节点查询](https://leetcode.cn/problems/closest-nodes-queries-in-a-binary-search-tree/)
+
+**解法：二分**
+
+~~~
+class Solution {
+    List<Integer> arr;
+    public void dfs(TreeNode root) {
+        if (root == null) return;
+        dfs(root.left);
+        arr.add(root.val);
+        dfs(root.right);
+    }
+    public List<List<Integer>> closestNodes(TreeNode root, List<Integer> queries) {
+        arr = new ArrayList<>();
+        dfs(root);
+        var res = new ArrayList<List<Integer>>();
+        for (var q : queries) {
+            int l = 0, r = arr.size() - 1;
+            var tem = new ArrayList<Integer>();
+            while (l < r) {
+                var mid = l + r + 1 >> 1;
+                if (arr.get(mid) <= q) l = mid;
+                else r = mid - 1;
+            }
+            if (arr.get(l) <= q) tem.add(arr.get(l));
+            else tem.add(-1);
+            l = 0;
+            r = arr.size() - 1;
+            while (l < r) {
+                var mid = l + r >> 1;
+                if (arr.get(mid) >= q) r = mid;
+                else l = mid + 1;
+            }
+            if (arr.get(r) >= q) tem.add(arr.get(r));
+            else tem.add(-1);
+            res.add(tem);
+        }
+        return res;
+    }
+}
+~~~
+
+**解法：二叉搜索树**
+
+~~~
+class Solution {
+    TreeSet<Integer> set;
+    public void dfs(TreeNode root) {
+        if (root == null) return;
+        dfs(root.left);
+        set.add(root.val);
+        dfs(root.right);
+    }
+    public List<List<Integer>> closestNodes(TreeNode root, List<Integer> queries) {
+        set = new TreeSet<>();
+        dfs(root);
+        var res = new ArrayList<List<Integer>>();
+        for (var q : queries) {
+            var t = new ArrayList<Integer>();
+            t.add(set.floor(q) == null ? -1 : set.floor(q));
+            t.add(set.ceiling(q) == null ? -1 : set.ceiling(q));
+            res.add(t);
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem C - [到达首都的最少油耗](https://leetcode.cn/problems/minimum-fuel-cost-to-report-to-the-capital/)
+
+**解法：贪心**
+
+~~~
+class Solution {
+    int seats;
+    long res = 0l;
+    List<Integer>[] g;
+
+    public int dfs(int x, int fa) {
+        var size = 1;
+        for (var p : g[x])
+            if (p != fa)
+                size += dfs(p, x);
+        if (x != 0)
+            res += (size + seats - 1) / seats;
+        return size;
+    }
+
+    public long minimumFuelCost(int[][] roads, int _seats) {
+        var n = roads.length + 1;
+        g = new List[n];
+        seats = _seats;
+        Arrays.setAll(g, e -> new ArrayList<>());
+        for (var road : roads) {
+            int a = road[0], b = road[1];
+            g[a].add(b);
+            g[b].add(a);
+        }
+        dfs(0, -1);
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem D - [完美分割的方案数](https://leetcode.cn/problems/number-of-beautiful-partitions/)
+
+**解法：dp**
+
+
+
+## 92场双周赛
+
+#### Problem A - [分割圆的最少切割次数](https://leetcode.cn/problems/minimum-cuts-to-divide-a-circle/)
+
+**解法：分类讨论**
+
+~~~
+class Solution {
+    public int numberOfCuts(int n) {
+        if (n == 1) return 0;
+        else if ((n & 1) == 1) return n;
+        else return n / 2;
+    }
+}
+~~~
+
+
+
+#### Problem B - [行和列中一和零的差值](https://leetcode.cn/problems/difference-between-ones-and-zeros-in-row-and-column/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public int[][] onesMinusZeros(int[][] g) {
+        int n = g.length, m = g[0].length;
+        var cols = new int[n];
+        var rows = new int[m];
+        for (var i = 0; i < n; i ++ ) 
+            for (var j = 0; j < m; j ++ ) {
+                cols[i] += g[i][j];
+                rows[j] += g[i][j];
+            }
+        for (var i = 0; i < n; i ++ ) 
+            for (var j = 0; j < m; j ++ ) 
+                g[i][j] = cols[i] + rows[j] - (n - cols[i]) - (m - rows[j]);
+        return g;
+    }
+}
+~~~
+
+
+
+#### Problem C - [商店的最少代价](https://leetcode.cn/problems/minimum-penalty-for-a-shop/)
+
+**解法：枚举&前缀和**
+
+~~~
+class Solution {
+    public int bestClosingTime(String c) {
+        var n = c.length();
+        var f = new int[n + 1];
+        var g = new int[n + 1];
+        for (var i = 0; i < n; i ++ ) f[i + 1] = f[i] + (c.charAt(i) == 'N' ? 1 : 0);
+        for (var i = n; i > 0; i -- ) g[i - 1] = g[i] + (c.charAt(i - 1) == 'Y' ? 1 : 0);
+        int res = 0, cnt = (int) 1e5;
+        for (int i = 0; i <= n; i ++ ) {
+            if (cnt > f[i] + g[i]) {
+                res = i;
+                cnt = f[i] + g[i];
+            }
+        }
+        return res;
+    }
+}
+~~~
+
+
+
+#### Problem D - [统计回文子序列数目](https://leetcode.cn/problems/count-palindromic-subsequences/)
+
+**解法：枚举 & 递推**
+
+
+
+## 321场周赛
+
+#### Problem A - [找出中枢整数](https://leetcode.cn/problems/find-the-pivot-integer/)
+
+**解法：枚举**
+
+~~~
+class Solution {
+    public int pivotInteger(int n) {
+        var k = (1 + n) * n / 2;
+        for (int i = 1, p = 0; i <= n; i ++ ) {
+            p += i;
+            if (p == k)
+                return i;
+            k -= i;
+        }
+        return -1;
+    }
+}
+~~~
+
+
+
+#### Problem B - [追加字符以获得子序列](https://leetcode.cn/problems/append-characters-to-string-to-make-subsequence/)
+
+**解法：贪心**
+
+~~~
+class Solution {
+    public int appendCharacters(String s, String t) {
+        int k = 0;
+        for (char c : s.toCharArray()) {
+            if (c == t.charAt(k)) k ++ ;
+            if (k == t.length()) break;
+        }
+        return t.length() - k;
+    }
+}
+~~~
+
+
+
+#### Problem C - [从链表中移除节点](https://leetcode.cn/problems/remove-nodes-from-linked-list/)
+
+**解法：模拟**
+
+~~~
+class Solution {
+    public ListNode removeNodes(ListNode head) {
+        var list = new ArrayList<Integer>();
+        for (var p = head; p != null; p = p.next) {
+            list.add(p.val);
+        }
+        var list2 = new ArrayList<Integer>();
+        for (int i = list.size() - 1, mx = 0; i >= 0; i -- ) {
+            mx = Math.max(mx, list.get(i));
+            if (list.get(i) >= mx) list2.add(list.get(i));
+        }
+        var dummy = new ListNode(-1);
+        var cur = dummy;
+        for (var i = list2.size() - 1; i >= 0; i -- ) {
+            cur = cur.next = new ListNode(list2.get(i));
+        }
+        return dummy.next;
+    }
+}
+~~~
+
+**解法：递归**
+
+~~~
+class Solution {
+    int mx = 0;
+    public ListNode removeNodes(ListNode head) {
+        return dfs(head);
+    }
+
+    public ListNode dfs(ListNode head) {
+        if (head == null) return head;
+        var res = dfs(head.next);
+        mx = Math.max(mx, head.val);
+        if (head.val >= mx) {
+            head.next = res;
+            return head;
+        } else {
+            return res;
+        } 
+    }
+}
+~~~
+
+#### Problem D - [统计中位数为 K 的子数组](https://leetcode.cn/problems/count-subarrays-with-median-k/)
+
+**解法：枚举&中心扩展**
+
+~~~
+class Solution {
+    public int countSubarrays(int[] nums, int k) {
+        var res = 0;
+        var n = nums.length;
+        var p = 0;
+        while (nums[p] != k) p ++ ;
+        var map = new HashMap<Integer, Integer>();
+        map.put(0, 1);
+        for (int i = p - 1, cur = 0; i >= 0; i -- ) {
+            cur += nums[i] > k ? 1 : -1;
+            map.put(cur, map.getOrDefault(cur, 0) + 1);
+        }
+        res += map.get(0);
+        res += map.getOrDefault(1, 0);
+        for (int i = p + 1, cur = 0; i < n; i ++ ) {
+            cur += nums[i] > k ? 1 : -1;
+            res += map.getOrDefault(-cur, 0);
+            res += map.getOrDefault(-(cur - 1), 0);
+        }
+        return res;
+    }
+}
+~~~
+

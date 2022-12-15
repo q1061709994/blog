@@ -36,16 +36,21 @@ void quick_sort(int q[], int l, int r)
 [O(n)]	空间[O(logn)]
 
 ~~~
+public void swap(int[] nums, int i, int j) {
+	int t = nums[i];
+    nums[i] = nums[j];
+    nums[j] = t;
+}
 public int quick_select(int[] nums, int l, int r, int k) {
-	if (l == r) return nums[l];
-	int x = nums[l], i = l - 1, j = r + 1;
-	while (i < j) {
-		do i ++ ; while (nums[i] > x);
-		do j -- ; while (nums[j] < x);
-		if (i < j) swap(nums, i, j);
-	}
-	if (k <= j) return quick_select(nums, l, j, k);
-	else return quick_select(nums, j + 1, r, k);
+	if (l == r) return nums[k];
+    int x = nums[new Random().nextInt(l, r + 1)], i = l - 1, j = r + 1;
+    while (i < j) {
+        do i ++ ; while (nums[i] > x);
+        do j -- ; while (nums[j] < x);
+        if (i < j) swap(nums, i, j);
+    }
+    if (k <= j) return quick_select(nums, l, j, k);
+    else return quick_select(nums, j + 1, r, k);
 }
 ~~~
 
@@ -1359,6 +1364,30 @@ static PriorityQueue<int[]> heap = new PriorityQueue<>((a, b)->a[0]-b[0]);
     }
 ~~~
 
+~~~
+public int[] dijkstra(List<int[]>[] g, int start) {
+    var dist = new int[g.length];
+    Arrays.fill(dist, Integer.MAX_VALUE);
+    dist[start] = 0;
+    var pq = new PriorityQueue<int[]>((a, b) -> a[1] - b[1]);
+    pq.add(new int[]{start, 0});
+    while (!pq.isEmpty()) {
+        var p = pq.poll();
+        int x = p[0], d = p[1];
+        if (d > dist[x]) continue;
+        for (var e : g[x]) {
+            int y = e[0];
+            int newDist = d + e[1];
+            if (newDist < dist[y]) {
+                dist[y] = newDist;
+                pq.offer(new int[]{y, newDist});
+			}
+		}
+	}
+	return dist;
+}
+~~~
+
 
 
 ### Bellman-Ford算法 
@@ -2529,15 +2558,23 @@ public static int gcd(int a, int b) {
             b = t;
         }
         return a;
-    }
+}
 ~~~
+
+~~~
+public static int gcd(int a, int b) {
+	return b == 0 ? a : gcd(b, a % b);
+}
+~~~
+
+
 
 ### 求最小公倍数
 
 ~~~
  public static int lcm(int a, int b) {
         return a * b / gcd(a, b);
-    }
+}
 ~~~
 
 ### 求a/b上取整
