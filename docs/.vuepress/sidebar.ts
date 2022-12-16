@@ -11,6 +11,19 @@ export default sidebar({
         "Operating Systems",
         "Deep_into_OperatingSystem",
         "Python Handbook",
+        "Frame"
+    ],
+    "/javaNote/": [
+        "Frame",
+        "Java",
+        "JUC",
+        "JVM",
+        "MySQL",
+        "NET",
+        "Redis",
+        "SSM",
+        "Tool",
+        "Web"
     ],
     "/posts/": [
         "article1",
